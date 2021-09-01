@@ -5,7 +5,9 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,17 +44,20 @@ public class PessoaEnderecoController {
 	private EnderecoInputDisassembler enderecoInputDisassembler;
 
 	@GetMapping
-	public List<EnderecoModel> buscarTodosEnderecos(@PathVariable Long pessoaId) {
+	public ResponseEntity<List<EnderecoModel>> buscarTodosEnderecos(@PathVariable Long pessoaId) {
 		Pessoa pessoa = crudPessoaService.buscarPorId(pessoaId);
 
-		return enderecoModelAssembler.toCollectionModel(pessoa.getEnderecos());
+		return ResponseEntity.ok().cacheControl(CacheControl.noCache().cachePublic())
+				.body(enderecoModelAssembler.toCollectionModel(pessoa.getEnderecos()));
 	}
 
 	@GetMapping("/{enderecoId}")
-	public EnderecoModel buscarEnderecoDaPessoa(@PathVariable Long pessoaId, @PathVariable Long enderecoId) {
+	public ResponseEntity<EnderecoModel> buscarEnderecoDaPessoa(@PathVariable Long pessoaId,
+			@PathVariable Long enderecoId) {
 		Endereco endereco = crudPessoaEnderecoService.buscarEnderecoDaPessoa(pessoaId, enderecoId);
 
-		return enderecoModelAssembler.toModel(endereco);
+		return ResponseEntity.ok().cacheControl(CacheControl.noCache().cachePublic())
+				.body(enderecoModelAssembler.toModel(endereco));
 	}
 
 	@PostMapping

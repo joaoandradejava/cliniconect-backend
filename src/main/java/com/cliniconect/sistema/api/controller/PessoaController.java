@@ -5,7 +5,9 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,30 +45,31 @@ public class PessoaController {
 	private PessoaInputDisassembler pessoaInputDisassembler;
 
 	@GetMapping
-	public Page<PessoaModel> buscarTodas(Pageable pageable, String nome, String cpf) {
+	public ResponseEntity<Page<PessoaModel>> buscarTodas(Pageable pageable, String nome, String cpf) {
 		Page<Pessoa> page = null;
 
 		if (StringUtils.hasLength(nome)) {
 			page = crudPessoaService.buscarPorNome(nome, pageable);
 
-			return page.map(x -> pessoaModelAssembler.toModel(x));
+			return ResponseEntity.ok().cacheControl(CacheControl.noCache().cachePublic()).body(changeToModel(page));
 		}
 
 		if (StringUtils.hasLength(cpf)) {
 			page = crudPessoaService.buscarPorCpf(cpf, pageable);
 
-			return page.map(x -> pessoaModelAssembler.toModel(x));
+			return ResponseEntity.ok().cacheControl(CacheControl.noCache().cachePublic()).body(changeToModel(page));
 		}
 
 		page = crudPessoaService.buscarTodas(pageable);
-		return page.map(x -> pessoaModelAssembler.toModel(x));
+		return ResponseEntity.ok().cacheControl(CacheControl.noCache().cachePublic()).body(changeToModel(page));
 	}
 
 	@GetMapping("/{id}")
-	public PessoaFullModel buscarPorId(@PathVariable Long id) {
+	public ResponseEntity<PessoaFullModel> buscarPorId(@PathVariable Long id) {
 		Pessoa pessoa = crudPessoaService.buscarPorId(id);
 
-		return pessoaFullModelAssembler.toModel(pessoa);
+		return ResponseEntity.ok().cacheControl(CacheControl.noCache().cachePublic())
+				.body(pessoaFullModelAssembler.toModel(pessoa));
 	}
 
 	@PostMapping
@@ -90,6 +93,10 @@ public class PessoaController {
 	@ResponseStatus(value = HttpStatus.NO_CONTENT)
 	public void deletarPorId(@PathVariable Long id) {
 		crudPessoaService.deletarPorId(id);
+	}
+
+	private Page<PessoaModel> changeToModel(Page<Pessoa> page) {
+		return page.map(x -> pessoaModelAssembler.toModel(x));
 	}
 
 }
