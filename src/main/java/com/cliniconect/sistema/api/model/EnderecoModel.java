@@ -2,6 +2,7 @@ package com.cliniconect.sistema.api.model;
 
 public class EnderecoModel {
 	private Long id;
+	private String cep;
 	private String rua;
 	private String numero;
 	private String bairro;
@@ -17,6 +18,14 @@ public class EnderecoModel {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public String getCep() {
+		return cep;
+	}
+
+	public void setCep(String cep) {
+		this.cep = cep;
 	}
 
 	public String getRua() {

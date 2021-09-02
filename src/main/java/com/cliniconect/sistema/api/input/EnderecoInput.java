@@ -5,6 +5,10 @@ import javax.validation.constraints.Size;
 
 public class EnderecoInput {
 
+	@Size(max = 8)
+	@NotBlank
+	private String cep;
+
 	@Size(max = 255)
 	@NotBlank
 	private String rua;
@@ -26,6 +30,14 @@ public class EnderecoInput {
 	private String estado;
 
 	public EnderecoInput() {
+	}
+
+	public String getCep() {
+		return cep;
+	}
+
+	public void setCep(String cep) {
+		this.cep = cep;
 	}
 
 	public String getRua() {
